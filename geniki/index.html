@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="el">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Police Department Data Merger</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+      textarea {
+        white-space: pre;
+        overflow-wrap: normal;
+        overflow-x: scroll;
+      }
+    </style>
+  </head>
+  <body class="bg-slate-50 p-8">
+    <div
+      class="max-w-5xl mx-auto bg-white p-6 rounded-xl shadow-lg border border-slate-200"
+    >
+      <h1 class="text-2xl font-bold text-slate-800 mb-2">
+        ΔΙ.ΑΣ. management tool
+      </h1>
+      <p class="text-slate-500 mb-6">Ανέβασε τα 5 αρχεία excel της κάθε Δ.Α.</p>
+
+      <div class="flex flex-col gap-4 mb-6">
+        <input
+          type="file"
+          id="fileInput"
+          multiple
+          accept=".xlsx, .xls"
+          class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer"
+        />
+
+        <button
+          onclick="processFiles()"
+          class="w-full bg-emerald-600 text-white font-bold py-3 rounded-md hover:bg-emerald-700 transition"
+        >
+          ΕΚΚΙΝΗΣΗ
+        </button>
+      </div>
+
+      <div>
+        <label class="block text-sm font-bold text-slate-700 mb-1"></label>
+          Ενοποιημένα δεδομένα (CSV Format). Αντιγραφή και επικόλληση στο κεντρικό excel</label
+        >
+        <textarea
+          id="output"
+          readonly
+          class="w-full h-80 p-4 font-mono text-xs border rounded-lg bg-slate-900 text-emerald-400 outline-none"
+          placeholder="Τα δεδομένα θα εμφανιστούν εδω ..."
+        ></textarea>
+      </div>
+    </div>
+
+    <script>
+      const targetDepartments = [
+        { key: "Δ.Α. ΑΛΕΞ/ΠΟΛΗΣ", search: "ΑΛΕΞ" },
+        { key: "Δ.Α. ΡΟΔΟΠΗΣ", search: "ΡΟΔΟΠ" },
+        { key: "Δ.Α. ΞΑΝΘΗΣ", search: "ΞΑΝΘ" },
+        { key: "Δ.Α. ΚΑΒΑΛΑΣ", search: "ΚΑΒΑΛ" },
+        { key: "Δ.Α. ΔΡΑΜΑΣ", search: "ΔΡΑΜΑ" },
+      ];
+
+      async function processFiles() {
+        const fileInput = document.getElementById("fileInput");
+        const output = document.getElementById("output");
+        const files = Array.from(fileInput.files);
+
+        if (files.length === 0) {
+          alert("Please select at least one file.");
+          return;
+        }
+
+        let consolidatedData = {};
+        targetDepartments.forEach(
+          (dept) => (consolidatedData[dept.key] = null),
+        );
+
+        for (let file of files) {
+          const data = await file.arrayBuffer();
+          const workbook = XLSX.read(data, { type: "array" });
+
+          workbook.SheetNames.forEach((sheetName) => {
+            const worksheet = workbook.Sheets[sheetName];
+            const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+            rows.forEach((row) => {
+              // Ensure the row has content in the first or second cell
+              const cell0 = String(row[0] || "").toUpperCase();
+              const cell1 = String(row[1] || "").toUpperCase();
+              const combinedLabel = cell0 + " " + cell1;
+
+              targetDepartments.forEach((dept) => {
+                // Check if our search term (e.g., "ΞΑΝΘ") exists anywhere in the first two cells
+                if (combinedLabel.includes(dept.search)) {
+                  // Check for numeric data in the row
+                  const hasData = row
+                    .slice(2)
+                    .some(
+                      (cell) =>
+                        cell !== null &&
+                        cell !== "" &&
+                        !isNaN(parseFloat(cell)) &&
+                        parseFloat(cell) > 0,
+                    );
+
+                  if (hasData) {
+                    let cleanedRow = [...row];
+
+                    // If the row started with a blank (Drama style), fix it
+                    if (
+                      !cleanedRow[0] ||
+                      cleanedRow[0].toString().trim() === ""
+                    ) {
+                      cleanedRow[0] = dept.key;
+                      // If column B was also blank, put the City name in (if needed)
+                      if (!cleanedRow[1]) cleanedRow[1] = dept.search;
+                    } else {
+                      // Standardize the name to our key for the final report
+                      cleanedRow[0] = dept.key;
+                    }
+
+                    consolidatedData[dept.key] = cleanedRow;
+                  }
+                }
+              });
+            });
+          });
+        }
+
+        displayResult(consolidatedData);
+      }
+
+      function displayResult(data) {
+        const output = document.getElementById("output");
+        let pasteReadyContent = "";
+
+        targetDepartments.forEach((dept) => {
+          const row = data[dept.key];
+          let numericalData = [];
+
+          if (row) {
+            // We start from index 2 to skip Dept and City
+            for (let i = 2; i <= 21; i++) {
+              let val = row[i];
+              // Clean the value: if it's empty, undefined, or a dash, make it 0
+              if (
+                val === undefined ||
+                val === null ||
+                val === "" ||
+                val === "-"
+              ) {
+                numericalData.push("0");
+              } else {
+                numericalData.push(val);
+              }
+            }
+          } else {
+            // If the whole department is missing, generate 20 zeros
+            numericalData = Array(20).fill("0");
+          }
+
+          // Join with TABS for Excel
+          pasteReadyContent += numericalData.join("\t") + "\n";
+        });
+
+        output.value = pasteReadyContent;
+        output.select(); // Auto-select for easy Ctrl+C
+      }
+    </script>
+  </body>
+</html>
