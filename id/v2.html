@@ -4,15 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Καταμέτρηση Αρχών Παραλαβής</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.0.4/tesseract.min.js"></script>
+    <script src="./libs/pdfjs-3.11.174/pdf.min.js"></script>
+    <script src="./libs/tesseract5/tesseract.min.js"></script>
     <script
       async
-      src="https://cdn.jsdelivr.net/npm/opencv.js@1.2.1/opencv.min.js"
+      src="./libs/opencv/opencv-1.2.1.min.js"
       onload="onOpenCvLoaded()"
     ></script>
     <style>
-      @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&display=swap");
+      /* IBM Plex Mono removed — served locally if available, falls back to system monospace */
       :root {
         --bg: #0f0f0f;
         --surface: #1a1a1a;
@@ -779,7 +779,7 @@
 
     <script>
       pdfjsLib.GlobalWorkerOptions.workerSrc =
-        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+        "./libs/pdfjs-3.11.174/pdf.worker.min.js";
 
       // ── OpenCV ────────────────────────────────────────────────────────────────────
       let cvReady = false;
@@ -1166,7 +1166,9 @@
         try {
           setP(1, "Φόρτωση Tesseract (Greek)…");
           const worker = await Tesseract.createWorker("ell", 1, {
-            langPath: "https://tessdata.projectnaptha.com/4.0.0_best",
+            langPath: "./libs/tessdata-4.0.0_best",
+            workerPath: "./libs/tesseract5/worker.min.js",
+            corePath: "./libs/tesseract5/tesseract-core-simd.wasm.js",
             logger: () => {},
           });
           await worker.setParameters({

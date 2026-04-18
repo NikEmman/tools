@@ -3,11 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <title>Multi-PDF OCR Parser (Fixed CORS)</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
+    <script src="./libs/pdfjs-3.11.174/pdf.min.js"></script>
+    <script src="./libs/tesseract5/tesseract.min.js"></script>
     <script
       async
-      src="https://docs.opencv.org/4.5.4/opencv.js"
+      src="./libs/opencv/opencv-1.2.1.min.js"
       onload="onOpenCvReady()"
     ></script>
 
@@ -286,12 +286,10 @@
 
       // Fix for the Worker Error: Initialize Tesseract with explicit paths
       const initTesseract = async () => {
-        const worker = await Tesseract.createWorker({
-          workerPath:
-            "https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/worker.min.js",
-          langPath: "https://tessdata.projectnaptha.com/4.0.0",
-          corePath:
-            "https://cdn.jsdelivr.net/npm/tesseract.js-core@4.0.2/tesseract-core.wasm.js",
+        const worker = await Tesseract.createWorker("ell", 1, {
+          workerPath: "./libs/tesseract5/worker.min.js",
+          langPath: "./libs/tessdata-4.0.0_best",
+          corePath: "./libs/tesseract5/tesseract-core-simd.wasm.js",
           logger: (m) => {
             if (m.status === "recognizing text") {
               document.getElementById("status").innerText =
@@ -299,8 +297,6 @@
             }
           },
         });
-        await worker.loadLanguage("ell");
-        await worker.initialize("ell");
         await worker.setParameters({
           tessedit_pageseg_mode: "3",
           tessedit_char_whitelist: "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ0123456789.-, ",
@@ -653,7 +649,7 @@
 
       window.onload = () => {
         pdfjsLib.GlobalWorkerOptions.workerSrc =
-          "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js";
+          "./libs/pdfjs-3.11.174/pdf.worker.min.js";
       };
     </script>
   </body>
