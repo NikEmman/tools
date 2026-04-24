@@ -148,17 +148,14 @@
 
       function displayResult(data) {
         const output = document.getElementById("output");
-        let pasteReadyContent = "";
 
-        targetDepartments.forEach((dept) => {
+        const rows = targetDepartments.map((dept) => {
           const row = data[dept.key];
           let numericalData = [];
 
           if (row) {
-            // We start from index 2 to skip Dept and City
             for (let i = 2; i <= 21; i++) {
               let val = row[i];
-              // Clean the value: if it's empty, undefined, or a dash, make it 0
               if (
                 val === undefined ||
                 val === null ||
@@ -171,15 +168,13 @@
               }
             }
           } else {
-            // If the whole department is missing, generate 20 zeros
             numericalData = Array(20).fill("0");
           }
 
-          // Join with TABS for Excel
-          pasteReadyContent += numericalData.join("\t") + "\n";
+          return numericalData.join("\t");
         });
 
-        output.value = pasteReadyContent;
+        output.value = rows.join("\n");
         output.select();
       }
 
