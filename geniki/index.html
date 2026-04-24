@@ -193,7 +193,7 @@
             await navigator.clipboard.writeText(output.value);
           } else {
             const textarea = document.createElement("textarea");
-            textarea.value = output.value;
+            textarea.value = output.value.trim();
             textarea.style.position = "fixed";
             textarea.style.left = "-9999px";
             document.body.appendChild(textarea);
