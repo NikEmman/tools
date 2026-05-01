@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="el">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Tools</title>
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        background-color: #f8fafc;
+        font-family: sans-serif;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.25rem;
+        width: 100%;
+        max-width: 640px;
+      }
+
+      a.card {
+        display: block;
+        background-color: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        text-decoration: none;
+        box-shadow: 0 1px 3px rgba(0,0,0,.07);
+        transition: box-shadow 150ms ease, border-color 150ms ease;
+      }
+
+      a.card:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,.12);
+        border-color: #94a3b8;
+      }
+
+      .card-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 0.25rem;
+      }
+
+      .card-sub {
+        font-size: 0.8rem;
+        color: #64748b;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="grid">
+      <a class="card" href="geniki/index.html">
+        <div class="card-title">ΔΙ.ΑΣ. management tool</div>
+        <div class="card-sub">Ενοποίηση δεδομένων Δ.Α.</div>
+      </a>
+      <a class="card" href="id/index.html">
+        <div class="card-title">Καταμέτρηση Αρχών Παραλαβής</div>
+        <div class="card-sub">Επεξεργασία εγγράφων ID</div>
+      </a>
+    </div>
+  </body>
+</html>
