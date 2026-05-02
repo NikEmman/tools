@@ -1,0 +1,39 @@
+{
+  "name": "tools",
+  "version": "1.0.0",
+  "description": "Βοηθητικά εργαλεία",
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win dir && node scripts/zip-dist.js"
+  },
+  "build": {
+    "appId": "com.tools.app",
+    "productName": "Tools",
+    "directories": {
+      "output": "dist"
+    },
+    "asar": false,
+    "files": [
+      "index.html",
+      "geniki/**/*",
+      "id/**/*",
+      "libs/**/*",
+      "images/**/*",
+      "electron/**/*"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "dir",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "images/icon.png"
+    }
+  },
+  "devDependencies": {
+    "electron": "^36.0.0",
+    "electron-builder": "^26.0.0"
+  }
+}
