@@ -288,11 +288,12 @@
       let cropR = 100;
 
       // Fix for the Worker Error: Initialize Tesseract with explicit paths
+      const abs = (rel) => new URL(rel, location.href).href;
       const initTesseract = async () => {
         const worker = await Tesseract.createWorker("ell", 1, {
-          workerPath: "../libs/tesseract5/worker.min.js",
-          langPath: "../libs/tessdata-4.0.0_best",
-          corePath: "../libs/tesseract5/tesseract-core-simd.wasm.js",
+          workerPath: abs("../libs/tesseract5/worker.min.js"),
+          langPath: abs("../libs/tessdata-4.0.0_best"),
+          corePath: abs("../libs/tesseract5/tesseract-core-simd.wasm.js"),
           logger: (m) => {
             if (m.status === "recognizing text") {
               document.getElementById("status").innerText =

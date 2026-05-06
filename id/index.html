@@ -1168,10 +1168,11 @@
 
         try {
           setP(1, "Φόρτωση Tesseract (Greek)…");
+          const abs = (rel) => new URL(rel, location.href).href;
           const worker = await Tesseract.createWorker("ell", 1, {
-            langPath: "../libs/tessdata-4.0.0_best",
-            workerPath: "../libs/tesseract5/worker.min.js",
-            corePath: "../libs/tesseract5/tesseract-core-simd.wasm.js",
+            langPath: abs("../libs/tessdata-4.0.0_best"),
+            workerPath: abs("../libs/tesseract5/worker.min.js"),
+            corePath: abs("../libs/tesseract5/tesseract-core-simd.wasm.js"),
             logger: () => {},
           });
           await worker.setParameters({
